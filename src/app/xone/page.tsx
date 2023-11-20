@@ -45,11 +45,11 @@ export default function Home() {
       return;
     }
 
-    if (!tokenId) {
-      setLogs((logs) => [...logs, handleLog("没有 tokenId", "error")]);
-      setRunning(false);
-      return;
-    }
+    // if (!tokenId) {
+    //   setLogs((logs) => [...logs, handleLog("没有 tokenId", "error")]);
+    //   setRunning(false);
+    //   return;
+    // }
 
     const client = createPublicClient({
       chain: mainnet,
@@ -68,7 +68,7 @@ export default function Home() {
           address: "0x4DCDa2274899d9BbA3Bb6f5A852C107Dd6E4fE1c",
           abi: xoneAbi,
           functionName: "mint",
-          args: [BigInt(tokenId), false],
+          args: [BigInt(0), false],
         });
         const hash = await walletClient.writeContract(request);
         setLogs((logs) => [
@@ -83,7 +83,7 @@ export default function Home() {
         ]);
       }
     }
-  }, [accounts, rpc, tokenId]);
+  }, [accounts, rpc]);
 
   return (
     <main className=" flex flex-col items-center gap-5 py-5">
@@ -175,7 +175,7 @@ export default function Home() {
           }}
         />
 
-        <input
+        {/* <input
           className=" h-10 w-[400px] rounded-lg border px-2"
           placeholder="tokenId （必填，随便填，不要跟人撞）"
           type="number"
@@ -184,7 +184,7 @@ export default function Home() {
             const text = e.target.value;
             setTokenId(Number(text));
           }}
-        />
+        /> */}
       </div>
 
       <div className=" mt-5 flex w-[1000px] flex-col gap-2">
