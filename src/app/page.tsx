@@ -126,6 +126,15 @@ export default function Home() {
         >
           https://github.com/vectorisvector/inscription
         </Link>
+
+        <span>alpha推特:</span>
+        <Link
+          className=" text-blue-500 hover:underline"
+          href="https://twitter.com/ChaunceyCrypto"
+          target="_blank"
+        >
+          https://twitter.com/ChaunceyCrypto
+        </Link>
       </div>
 
       <div className=" flex items-center justify-center gap-5">
