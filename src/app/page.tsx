@@ -3,6 +3,7 @@
 import classNames from "classnames";
 import { useCallback, useState } from "react";
 import {
+  Chain,
   Hex,
   PrivateKeyAccount,
   createWalletClient,
@@ -11,10 +12,34 @@ import {
   stringToHex,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { avalanche } from "viem/chains";
+import {
+  avalanche,
+  bsc,
+  mainnet,
+  polygon,
+  base,
+  arbitrum,
+  zkSync,
+  linea,
+  okc,
+} from "viem/chains";
 
-const defaultAvalancheRpc =
-  "https://avalanche-mainnet.infura.io/v3/89a0656361da45419291de4bce4ccc62";
+const chains = {
+  eth: mainnet,
+  bsc,
+  polygon,
+  avalanche,
+  base,
+  arbitrum,
+  zkSync,
+  linea,
+  okc,
+};
+
+type ChainKey = keyof typeof chains;
+
+const example =
+  'data:,{"p":"asc-20","op":"mint","tick":"aval","amt":"100000000"}';
 
 export default function Home() {
   const [accounts, setAccounts] = useState<PrivateKeyAccount[]>([]);
@@ -25,6 +50,7 @@ export default function Home() {
   const [timer, setTimer] = useState<NodeJS.Timeout>();
   const [rpc, setRpc] = useState<string>();
   const [intervalTime, setIntervalTime] = useState<number>(1000);
+  const [chain, setChain] = useState<Chain>(mainnet);
 
   const handleLog = (log: string, state: string = "success") => {
     return `${new Date().toLocaleString()} ${
@@ -58,8 +84,8 @@ export default function Home() {
     }
 
     const client = createWalletClient({
-      chain: avalanche,
-      transport: http(rpc || defaultAvalancheRpc),
+      chain,
+      transport: http(rpc),
     });
 
     const timer = setInterval(async () => {
@@ -84,18 +110,42 @@ export default function Home() {
       }
     }, intervalTime);
     setTimer(timer);
-  }, [accounts, inscription, intervalTime, rpc, toAddress]);
+  }, [accounts, chain, inscription, intervalTime, rpc, toAddress]);
 
   return (
     <main className=" flex flex-col items-center gap-5">
       <h1 className=" mt-5 text-5xl">Inscription</h1>
 
+      <div className=" mt-3 flex items-center justify-center gap-5">
+        <span>链（选你要打铭文的链，别选错了）:</span>
+        <select
+          className=" h-10 w-[200px] rounded-lg border px-2"
+          disabled={running}
+          onChange={(e) => {
+            const text = e.target.value as ChainKey;
+            setChain(chains[text]);
+          }}
+        >
+          {Object.keys(chains).map((key) => (
+            <option
+              key={key}
+              value={key}
+            >
+              {key}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <div className=" mt-3 flex flex-col gap-2">
-        <span>私钥（每行一个）:</span>
+        <span>私钥（必填，每行一个）:</span>
         <textarea
           className=" h-[100px] w-[800px] rounded-lg border p-2"
           placeholder="私钥"
           disabled={running}
+          value={
+            accounts.length > 0 ? accounts.map(() => "******").join("\n") : ""
+          }
           onChange={(e) => {
             const text = e.target.value;
             const lines = text.split("\n");
@@ -111,7 +161,7 @@ export default function Home() {
       </div>
 
       <div className=" mt-3 flex flex-col gap-2">
-        <span>转给谁的地址:</span>
+        <span>转给谁的地址（必填）:</span>
         <input
           className=" h-10 w-[800px] rounded-lg border px-2"
           placeholder="地址"
@@ -124,7 +174,7 @@ export default function Home() {
       </div>
 
       <div className=" mt-3 flex flex-col gap-2">
-        <span>自己的 rpc（可选，最好用自己的）:</span>
+        <span>rpc（可选，默认公共，http，最好用自己的）:</span>
         <input
           className=" h-10 w-[800px] rounded-lg border px-2"
           placeholder="rpc"
@@ -137,10 +187,10 @@ export default function Home() {
       </div>
 
       <div className=" mt-3 flex flex-col gap-2">
-        <span>要打的铭文:</span>
+        <span>要打的铭文（原始铭文，不是转码后的十六进制）:</span>
         <textarea
           className=" h-[100px] w-[800px] rounded-lg border p-2"
-          placeholder="铭文"
+          placeholder={`铭文，不要输入错了，自己多检查下，例子：\n${example}`}
           disabled={running}
           onChange={(e) => {
             const text = e.target.value;
