@@ -1,6 +1,7 @@
 "use client";
 
 import classNames from "classnames";
+import Link from "next/link";
 import { useCallback, useState } from "react";
 import {
   Chain,
@@ -113,10 +114,21 @@ export default function Home() {
   }, [accounts, chain, inscription, intervalTime, rpc, toAddress]);
 
   return (
-    <main className=" flex flex-col items-center gap-5">
-      <h1 className=" mt-5 text-5xl">Inscription</h1>
+    <main className=" flex flex-col items-center gap-5 py-5">
+      <h1 className=" text-5xl">Inscription</h1>
 
-      <div className=" mt-3 flex items-center justify-center gap-5">
+      <div className=" flex items-center gap-2">
+        <span>代码开源:</span>
+        <Link
+          className=" text-blue-500 hover:underline"
+          href="https://github.com/vectorisvector/inscription"
+          target="_blank"
+        >
+          https://github.com/vectorisvector/inscription
+        </Link>
+      </div>
+
+      <div className=" flex items-center justify-center gap-5">
         <span>链（选你要打铭文的链，别选错了）:</span>
         <select
           className=" h-10 w-[200px] rounded-lg border px-2"
@@ -137,7 +149,7 @@ export default function Home() {
         </select>
       </div>
 
-      <div className=" mt-3 flex flex-col gap-2">
+      <div className=" flex flex-col gap-2">
         <span>私钥（必填，每行一个）:</span>
         <textarea
           className=" h-[100px] w-[800px] rounded-lg border p-2"
@@ -160,7 +172,7 @@ export default function Home() {
         />
       </div>
 
-      <div className=" mt-3 flex flex-col gap-2">
+      <div className=" flex flex-col gap-2">
         <span>转给谁的地址（必填）:</span>
         <input
           className=" h-10 w-[800px] rounded-lg border px-2"
@@ -173,7 +185,7 @@ export default function Home() {
         />
       </div>
 
-      <div className=" mt-3 flex flex-col gap-2">
+      <div className=" flex flex-col gap-2">
         <span>rpc（可选，默认公共，http，最好用自己的）:</span>
         <input
           className=" h-10 w-[800px] rounded-lg border px-2"
@@ -186,7 +198,7 @@ export default function Home() {
         />
       </div>
 
-      <div className=" mt-3 flex flex-col gap-2">
+      <div className=" flex flex-col gap-2">
         <span>要打的铭文（原始铭文，不是转码后的十六进制）:</span>
         <textarea
           className=" h-[100px] w-[800px] rounded-lg border p-2"
@@ -199,7 +211,7 @@ export default function Home() {
         />
       </div>
 
-      <div className=" mt-3 flex items-center justify-center gap-5">
+      <div className=" flex items-center justify-center gap-5">
         <button
           className={classNames(
             " h-10 w-[200px] rounded-full text-white transition-all hover:opacity-80",
@@ -232,7 +244,7 @@ export default function Home() {
 
       <div className=" mt-5 flex w-[1000px] flex-col gap-2">
         <span>日志:</span>
-        <div className=" mt-3 flex h-[600px] flex-col gap-1 overflow-auto rounded-lg bg-gray-100 px-4 py-2">
+        <div className=" flex h-[600px] flex-col gap-1 overflow-auto rounded-lg bg-gray-100 px-4 py-2">
           {logs.map((log, index) => (
             <div
               key={log + index}
