@@ -68,7 +68,7 @@ export default function Home() {
           address: "0x4DCDa2274899d9BbA3Bb6f5A852C107Dd6E4fE1c",
           abi: xoneAbi,
           functionName: "mint",
-          args: [BigInt(0), false],
+          args: [BigInt(tokenId || 0), false],
         });
         const hash = await walletClient.writeContract(request);
         setLogs((logs) => [
@@ -83,7 +83,7 @@ export default function Home() {
         ]);
       }
     }
-  }, [accounts, rpc]);
+  }, [accounts, rpc, tokenId]);
 
   return (
     <main className=" flex flex-col items-center gap-5 py-5">
@@ -145,6 +145,20 @@ export default function Home() {
         />
       </div>
 
+      <div className=" flex flex-col gap-2">
+        <span>tokenId（选填，如果你有 XENFT 就填，没有就别管）:</span>
+        <input
+          className=" h-10 w-[800px] rounded-lg border px-2"
+          placeholder="tokenId "
+          type="number"
+          disabled={running}
+          onChange={(e) => {
+            const text = e.target.value;
+            setTokenId(Number(text));
+          }}
+        />
+      </div>
+
       <div className=" flex items-center justify-center gap-5">
         <button
           className={classNames(
@@ -174,17 +188,6 @@ export default function Home() {
             setFee(Number(text));
           }}
         />
-
-        {/* <input
-          className=" h-10 w-[400px] rounded-lg border px-2"
-          placeholder="tokenId （必填，随便填，不要跟人撞）"
-          type="number"
-          disabled={running}
-          onChange={(e) => {
-            const text = e.target.value;
-            setTokenId(Number(text));
-          }}
-        /> */}
       </div>
 
       <div className=" mt-5 flex w-[1000px] flex-col gap-2">
