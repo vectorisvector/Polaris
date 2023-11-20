@@ -5,14 +5,11 @@ import classNames from "classnames";
 import Link from "next/link";
 import { useCallback, useState } from "react";
 import {
-  Chain,
   Hex,
   PrivateKeyAccount,
   createPublicClient,
   createWalletClient,
   http,
-  isAddress,
-  stringToHex,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { mainnet } from "viem/chains";
@@ -21,7 +18,6 @@ export default function Home() {
   const [accounts, setAccounts] = useState<PrivateKeyAccount[]>([]);
   const [logs, setLogs] = useState<string[]>([]);
   const [running, setRunning] = useState<boolean>(false);
-  const [timer, setTimer] = useState<NodeJS.Timeout>();
   const [rpc, setRpc] = useState<string>();
   const [fee, setFee] = useState<number>(0);
   const [tokenId, setTokenId] = useState<number>();
@@ -45,12 +41,6 @@ export default function Home() {
       return;
     }
 
-    // if (!tokenId) {
-    //   setLogs((logs) => [...logs, handleLog("没有 tokenId", "error")]);
-    //   setRunning(false);
-    //   return;
-    // }
-
     const client = createPublicClient({
       chain: mainnet,
       transport: http(rpc),
@@ -68,6 +58,7 @@ export default function Home() {
           address: "0x4DCDa2274899d9BbA3Bb6f5A852C107Dd6E4fE1c",
           abi: xoneAbi,
           functionName: "mint",
+          maxPriorityFeePerGas: BigInt(fee),
           args: [BigInt(tokenId || 0), false],
         });
         const hash = await walletClient.writeContract(request);
@@ -83,7 +74,7 @@ export default function Home() {
         ]);
       }
     }
-  }, [accounts, rpc, tokenId]);
+  }, [accounts, fee, rpc, tokenId]);
 
   return (
     <main className=" flex flex-col items-center gap-5 py-5">
@@ -169,9 +160,6 @@ export default function Home() {
             if (!running) {
               setRunning(true);
               run();
-            } else {
-              setRunning(false);
-              timer && clearInterval(timer);
             }
           }}
         >
