@@ -23,6 +23,7 @@ import {
   zkSync,
   linea,
   okc,
+  fantom,
 } from "viem/chains";
 
 const chains = {
@@ -35,6 +36,7 @@ const chains = {
   zkSync,
   linea,
   okc,
+  fantom,
 };
 
 type ChainKey = keyof typeof chains;
@@ -164,9 +166,6 @@ export default function Home() {
           className=" h-[100px] w-[800px] rounded-lg border p-2"
           placeholder="私钥"
           disabled={running}
-          value={
-            accounts.length > 0 ? accounts.map(() => "******").join("\n") : ""
-          }
           onChange={(e) => {
             const text = e.target.value;
             const lines = text.split("\n");
