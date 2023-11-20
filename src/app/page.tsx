@@ -164,7 +164,7 @@ export default function Home() {
         <span>私钥（必填，每行一个）:</span>
         <textarea
           className=" h-[100px] w-[800px] rounded-lg border p-2"
-          placeholder="私钥"
+          placeholder="私钥，不要带 0x，程序会自动处理"
           disabled={running}
           onChange={(e) => {
             const text = e.target.value;
