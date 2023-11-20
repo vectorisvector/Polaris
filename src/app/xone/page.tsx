@@ -176,8 +176,8 @@ export default function Home() {
         />
 
         <input
-          className=" h-10 w-[240px] rounded-lg border px-2"
-          placeholder="tokenId 必填"
+          className=" h-10 w-[400px] rounded-lg border px-2"
+          placeholder="tokenId （必填，随便填，不要跟人撞）"
           type="number"
           disabled={running}
           onChange={(e) => {
