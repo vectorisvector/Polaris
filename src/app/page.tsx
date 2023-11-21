@@ -253,7 +253,9 @@ export default function Home() {
       </div>
 
       <div className=" mt-5 flex w-[1000px] flex-col gap-2">
-        <span>日志:</span>
+        <span>{`日志（计数 = ${
+          logs.filter((log) => log.includes("✅")).length
+        }）:`}</span>
         <div className=" flex h-[600px] flex-col gap-1 overflow-auto rounded-lg bg-gray-100 px-4 py-2">
           {logs.map((log, index) => (
             <div
