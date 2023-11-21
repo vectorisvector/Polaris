@@ -71,19 +71,19 @@ export default function Home() {
 
   const run = useCallback(() => {
     if (accounts.length === 0) {
-      setLogs((logs) => [...logs, handleLog("没有私钥", "error")]);
+      setLogs((logs) => [handleLog("没有私钥", "error"), ...logs]);
       setRunning(false);
       return;
     }
 
     if (!toAddress) {
-      setLogs((logs) => [...logs, handleLog("没有地址", "error")]);
+      setLogs((logs) => [handleLog("没有地址", "error"), ...logs]);
       setRunning(false);
       return;
     }
 
     if (!inscription) {
-      setLogs((logs) => [...logs, handleLog("没有铭文", "error")]);
+      setLogs((logs) => [handleLog("没有铭文", "error"), ...logs]);
       setRunning(false);
       return;
     }
@@ -103,13 +103,13 @@ export default function Home() {
             data: stringToHex(inscription),
           });
           setLogs((logs) => [
-            ...logs,
             handleLog(`${handleAddress(account.address)} ${hash}`, "success"),
+            ...logs,
           ]);
         } catch (error) {
           setLogs((logs) => [
-            ...logs,
             handleLog(`${handleAddress(account.address)} error`, "error"),
+            ...logs,
           ]);
         }
       }
