@@ -216,7 +216,7 @@ export default function Home() {
           disabled={running}
           onChange={(e) => {
             const text = e.target.value;
-            setInscription(text);
+            setInscription(text.trim());
           }}
         />
       </div>
