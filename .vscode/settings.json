@@ -1,5 +1,14 @@
 {
   "editor.formatOnSave": true,
   "css.lint.unknownAtRules": "ignore",
-  "cSpell.words": ["arbitrum", "linea", "tailwindcss", "viem", "xone"]
+  "cSpell.words": [
+    "arbitrum",
+    "Fren",
+    "linea",
+    "rainbowkit",
+    "tailwindcss",
+    "viem",
+    "wagmi",
+    "xone"
+  ]
 }
