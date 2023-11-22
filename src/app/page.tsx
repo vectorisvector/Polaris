@@ -128,16 +128,25 @@ export default function Home() {
           href="https://github.com/vectorisvector/inscription"
           target="_blank"
         >
-          https://github.com/vectorisvector/inscription
+          Alpha Script
         </Link>
 
-        <span>alpha推特:</span>
+        <span>dev:</span>
+        <Link
+          className=" text-blue-500 hover:underline"
+          href="https://twitter.com/cybervector_"
+          target="_blank"
+        >
+          @cybervector_
+        </Link>
+
+        <span>alpha:</span>
         <Link
           className=" text-blue-500 hover:underline"
           href="https://twitter.com/ChaunceyCrypto"
           target="_blank"
         >
-          https://twitter.com/ChaunceyCrypto
+          @ChaunceyCrypto
         </Link>
       </div>
 
