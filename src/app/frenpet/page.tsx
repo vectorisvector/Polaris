@@ -51,7 +51,7 @@ export default function FrenPet() {
 
     for (const account of accounts) {
       try {
-        const { request } = await client.simulateContract({
+        const hash = await walletClient.writeContract({
           account,
           address: "0x144ba2bd6dae469fb11c0d8a8e79b083c985ca73",
           abi: frenPetAbi,
@@ -60,7 +60,6 @@ export default function FrenPet() {
           args: [BigInt(fromId), BigInt(toId)],
           value: parseEther("0.00005"),
         });
-        const hash = await walletClient.writeContract(request);
         setLogs((logs) => [
           ...logs,
           handleLog(`${handleAddress(account.address)} ${hash}`, "success"),
