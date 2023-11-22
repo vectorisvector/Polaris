@@ -14,7 +14,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import { handleAddress, handleLog } from "../../utils/helper";
 import { base } from "viem/chains";
 import frenPetAbi from "@/abis/frenpet";
-import { rpc } from "viem/utils";
+import { parseEther, rpc } from "viem/utils";
 
 export default function FrenPet() {
   const [accounts, setAccounts] = useState<PrivateKeyAccount[]>([]);
@@ -58,6 +58,7 @@ export default function FrenPet() {
           functionName: "attack",
           maxPriorityFeePerGas: BigInt(fee),
           args: [BigInt(fromId), BigInt(toId)],
+          value: parseEther("0.00005"),
         });
         const hash = await walletClient.writeContract(request);
         setLogs((logs) => [
