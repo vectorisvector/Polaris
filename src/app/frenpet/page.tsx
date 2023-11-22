@@ -2,11 +2,11 @@
 
 import classNames from "classnames";
 import Link from "next/link";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Hex,
   PrivateKeyAccount,
-  createPublicClient,
+  TransactionExecutionError,
   createWalletClient,
   http,
 } from "viem";
@@ -14,7 +14,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import { handleAddress, handleLog } from "../../utils/helper";
 import { base } from "viem/chains";
 import frenPetAbi from "@/abis/frenpet";
-import { parseEther, rpc } from "viem/utils";
+import { parseEther } from "viem/utils";
 
 export default function FrenPet() {
   const [accounts, setAccounts] = useState<PrivateKeyAccount[]>([]);
@@ -23,26 +23,31 @@ export default function FrenPet() {
   const [fromId, setFromId] = useState<number>();
   const [toId, setToId] = useState<number>();
 
+  // useEffect(() => {
+  //   (async () => {
+  //     const res = fetch('https://fren-pet-indexer-production-0f00.up.railway.app/', {
+  //       body: {
+
+  //       }
+  //     })
+  //   })()
+  // }, [])
+
   const run = useCallback(async () => {
     if (accounts.length === 0) {
-      setLogs((logs) => [...logs, handleLog("没有私钥", "error")]);
+      setLogs((logs) => [handleLog("没有私钥", "error"), ...logs]);
       return;
     }
 
     if (!fromId) {
-      setLogs((logs) => [...logs, handleLog("没有 fromId", "error")]);
+      setLogs((logs) => [handleLog("没有 fromId", "error"), ...logs]);
       return;
     }
 
     if (!toId) {
-      setLogs((logs) => [...logs, handleLog("没有 toId", "error")]);
+      setLogs((logs) => [handleLog("没有 toId", "error"), ...logs]);
       return;
     }
-
-    const client = createPublicClient({
-      chain: base,
-      transport: http(),
-    });
 
     const walletClient = createWalletClient({
       chain: base,
@@ -61,13 +66,17 @@ export default function FrenPet() {
           value: parseEther("0.00005"),
         });
         setLogs((logs) => [
-          ...logs,
           handleLog(`${handleAddress(account.address)} ${hash}`, "success"),
-        ]);
-      } catch (error) {
-        setLogs((logs) => [
           ...logs,
-          handleLog(`${handleAddress(account.address)} error`, "error"),
+        ]);
+      } catch (error: any) {
+        const err = error as TransactionExecutionError;
+        setLogs((logs) => [
+          handleLog(
+            `${handleAddress(account.address)} ${err.details}`,
+            "error",
+          ),
+          ...logs,
         ]);
       }
     }
