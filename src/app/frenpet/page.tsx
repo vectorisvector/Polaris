@@ -2,7 +2,7 @@
 
 import classNames from "classnames";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import {
   Hex,
   PrivateKeyAccount,
@@ -22,16 +22,6 @@ export default function FrenPet() {
   const [fee, setFee] = useState<number>(0);
   const [fromId, setFromId] = useState<number>();
   const [toId, setToId] = useState<number>();
-
-  // useEffect(() => {
-  //   (async () => {
-  //     const res = fetch('https://fren-pet-indexer-production-0f00.up.railway.app/', {
-  //       body: {
-
-  //       }
-  //     })
-  //   })()
-  // }, [])
 
   const run = useCallback(async () => {
     if (accounts.length === 0) {

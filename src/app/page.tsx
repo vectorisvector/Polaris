@@ -25,6 +25,7 @@ import {
   okc,
   fantom,
   opBNB,
+  celo,
 } from "viem/chains";
 
 const chains = {
@@ -39,6 +40,7 @@ const chains = {
   okc,
   fantom,
   opBNB,
+  celo,
 };
 
 type ChainKey = keyof typeof chains;
