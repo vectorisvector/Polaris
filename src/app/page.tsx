@@ -26,6 +26,7 @@ import {
   fantom,
   opBNB,
   celo,
+  confluxESpace,
 } from "viem/chains";
 
 const chains = {
@@ -41,6 +42,7 @@ const chains = {
   fantom,
   opBNB,
   celo,
+  confluxESpace,
 };
 
 type ChainKey = keyof typeof chains;
