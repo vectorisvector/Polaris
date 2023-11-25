@@ -5,28 +5,29 @@ import Link from "next/link";
 import { useCallback, useState } from "react";
 import {
   Chain,
-  Hex,
-  PrivateKeyAccount,
   createWalletClient,
+  Hex,
   http,
   isAddress,
+  PrivateKeyAccount,
   stringToHex,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import {
-  avalanche,
-  bsc,
-  mainnet,
-  polygon,
-  base,
   arbitrum,
-  zkSync,
-  linea,
-  okc,
-  fantom,
-  opBNB,
+  avalanche,
+  base,
+  bsc,
   celo,
   confluxESpace,
+  fantom,
+  gnosis,
+  linea,
+  mainnet,
+  okc,
+  opBNB,
+  polygon,
+  zkSync,
 } from "viem/chains";
 
 const chains = {
@@ -43,6 +44,7 @@ const chains = {
   opBNB,
   celo,
   confluxESpace,
+  gnosis,
 };
 
 type ChainKey = keyof typeof chains;

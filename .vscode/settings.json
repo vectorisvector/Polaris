@@ -1,17 +1,28 @@
 {
   "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "eslint.codeActionsOnSave.mode": "problems",
   "css.lint.unknownAtRules": "ignore",
   "cSpell.words": [
     "arbitrum",
     "celo",
     "cybervector",
+    "fontsource",
     "Fren",
     "frenpet",
     "linea",
     "rainbowkit",
+    "roboto",
     "tailwindcss",
     "viem",
     "wagmi",
     "xone"
-  ]
+  ],
+  "[go]": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    }
+  }
 }
