@@ -4,17 +4,19 @@ import classNames from "classnames";
 import Link from "next/link";
 import { useCallback, useState } from "react";
 import {
+  createWalletClient,
   Hex,
+  http,
   PrivateKeyAccount,
   TransactionExecutionError,
-  createWalletClient,
-  http,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { handleAddress, handleLog } from "../../utils/helper";
 import { base } from "viem/chains";
-import frenPetAbi from "@/abis/frenpet";
 import { parseEther } from "viem/utils";
+
+import frenPetAbi from "@/abis/frenpet";
+
+import { handleAddress, handleLog } from "../../utils/helper";
 
 export default function FrenPet() {
   const [accounts, setAccounts] = useState<PrivateKeyAccount[]>([]);

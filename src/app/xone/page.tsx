@@ -1,18 +1,19 @@
 "use client";
 
-import xoneAbi from "@/abis/xone";
 import classNames from "classnames";
 import Link from "next/link";
 import { useCallback, useState } from "react";
 import {
-  Hex,
-  PrivateKeyAccount,
   createPublicClient,
   createWalletClient,
+  Hex,
   http,
+  PrivateKeyAccount,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { mainnet } from "viem/chains";
+
+import xoneAbi from "@/abis/xone";
 
 export default function Home() {
   const [accounts, setAccounts] = useState<PrivateKeyAccount[]>([]);
