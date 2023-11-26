@@ -15,6 +15,7 @@ import {
   Hex,
   http,
   isAddress,
+  parseEther,
   stringToHex,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
@@ -74,7 +75,7 @@ export default function Home() {
           const hash = await client.sendTransaction({
             account,
             to: radio === "meToMe" ? account.address : toAddress,
-            maxPriorityFeePerGas: BigInt(gas),
+            maxPriorityFeePerGas: parseEther(gas.toString(), "gwei"),
             value: 0n,
             data: stringToHex(inscription),
           });
@@ -221,11 +222,11 @@ export default function Home() {
         <TextField
           type="number"
           size="small"
-          placeholder="gas 费"
+          placeholder="gas 费，单位 gwei，例子：10"
           disabled={running}
           onChange={(e) => {
             const num = Number(e.target.value);
-            !Number.isNaN(num) && num > 0 && setGas(num);
+            !Number.isNaN(num) && num >= 0 && setGas(num);
           }}
         />
       </div>
