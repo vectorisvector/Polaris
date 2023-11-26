@@ -192,7 +192,7 @@ export default function Home() {
       )}
 
       <div className=" flex flex-col gap-2">
-        <span>rpc（选填，默认公共，http，最好用自己的）:</span>
+        <span>RPC（选填，默认公共，http，最好用自己的）:</span>
         <TextField
           size="small"
           placeholder="RPC"
@@ -222,7 +222,7 @@ export default function Home() {
         <TextField
           type="number"
           size="small"
-          placeholder="gas 费，单位 gwei，例子：10"
+          placeholder="默认 0，单位 gwei，例子: 10"
           disabled={running}
           onChange={(e) => {
             const num = Number(e.target.value);
