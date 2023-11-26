@@ -1,7 +1,13 @@
 "use client";
 
-import classNames from "classnames";
-import Link from "next/link";
+import {
+  Button,
+  FormControlLabel,
+  MenuItem,
+  Radio,
+  RadioGroup,
+  TextField,
+} from "@mui/material";
 import { useCallback, useState } from "react";
 import {
   Chain,
@@ -9,80 +15,41 @@ import {
   Hex,
   http,
   isAddress,
-  PrivateKeyAccount,
   stringToHex,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import {
-  arbitrum,
-  avalanche,
-  base,
-  bsc,
-  celo,
-  confluxESpace,
-  fantom,
-  gnosis,
-  linea,
-  mainnet,
-  okc,
-  opBNB,
-  polygon,
-  zkSync,
-} from "viem/chains";
+import { mainnet } from "viem/chains";
 
-const chains = {
-  eth: mainnet,
-  bsc,
-  polygon,
-  avalanche,
-  base,
-  arbitrum,
-  zkSync,
-  linea,
-  okc,
-  fantom,
-  opBNB,
-  celo,
-  confluxESpace,
-  gnosis,
-};
-
-type ChainKey = keyof typeof chains;
+import Log from "@/components/Log";
+import { ChainKey, inscriptionChains } from "@/config/chains";
+import { handleAddress, handleLog } from "@/utils/helper";
 
 const example =
   'data:,{"p":"asc-20","op":"mint","tick":"aval","amt":"100000000"}';
 
+type RadioType = "meToMe" | "manyToOne";
+
 export default function Home() {
-  const [accounts, setAccounts] = useState<PrivateKeyAccount[]>([]);
+  const [chain, setChain] = useState<Chain>(mainnet);
+  const [privateKeys, setPrivateKeys] = useState<Hex[]>([]);
+  const [radio, setRadio] = useState<RadioType>("meToMe");
   const [toAddress, setToAddress] = useState<Hex>();
+  const [rpc, setRpc] = useState<string>();
   const [inscription, setInscription] = useState<string>("");
-  const [logs, setLogs] = useState<string[]>([]);
+  const [gas, setGas] = useState<number>(0);
   const [running, setRunning] = useState<boolean>(false);
   const [timer, setTimer] = useState<NodeJS.Timeout>();
-  const [rpc, setRpc] = useState<string>();
   const [intervalTime, setIntervalTime] = useState<number>(1000);
-  const [chain, setChain] = useState<Chain>(mainnet);
-
-  const handleLog = (log: string, state: string = "success") => {
-    return `${new Date().toLocaleString()} ${
-      state === "success" ? "✅" : state === "error" ? "❌" : ""
-    } => ${log}`;
-  };
-
-  const handleAddress = (address: Hex) => {
-    const prefix = address.slice(0, 6);
-    const suffix = address.slice(-4);
-    return `${prefix}...${suffix}`;
-  };
+  const [logs, setLogs] = useState<string[]>([]);
 
   const run = useCallback(() => {
-    if (accounts.length === 0) {
+    if (privateKeys.length === 0) {
       setLogs((logs) => [handleLog("没有私钥", "error"), ...logs]);
       setRunning(false);
       return;
     }
 
-    if (!toAddress) {
+    if (radio === "manyToOne" && !toAddress) {
       setLogs((logs) => [handleLog("没有地址", "error"), ...logs]);
       setRunning(false);
       return;
@@ -99,12 +66,15 @@ export default function Home() {
       transport: http(rpc),
     });
 
+    const accounts = privateKeys.map((key) => privateKeyToAccount(key));
+
     const timer = setInterval(async () => {
       for (const account of accounts) {
         try {
           const hash = await client.sendTransaction({
             account,
-            to: toAddress,
+            to: radio === "meToMe" ? account.address : toAddress,
+            maxPriorityFeePerGas: BigInt(gas),
             value: 0n,
             data: stringToHex(inscription),
           });
@@ -121,100 +91,110 @@ export default function Home() {
       }
     }, intervalTime);
     setTimer(timer);
-  }, [accounts, chain, inscription, intervalTime, rpc, toAddress]);
+  }, [
+    chain,
+    gas,
+    inscription,
+    intervalTime,
+    privateKeys,
+    radio,
+    rpc,
+    toAddress,
+  ]);
 
   return (
-    <main className=" flex flex-col items-center gap-5 py-5">
-      <h1 className=" text-5xl">Inscription</h1>
-
-      <div className=" flex items-center gap-2">
-        <span>代码开源:</span>
-        <Link
-          className=" text-blue-500 hover:underline"
-          href="https://github.com/vectorisvector/inscription"
-          target="_blank"
-        >
-          Alpha Script
-        </Link>
-
-        <span>dev:</span>
-        <Link
-          className=" text-blue-500 hover:underline"
-          href="https://twitter.com/cybervector_"
-          target="_blank"
-        >
-          @cybervector_
-        </Link>
-
-        <span>alpha:</span>
-        <Link
-          className=" text-blue-500 hover:underline"
-          href="https://twitter.com/ChaunceyCrypto"
-          target="_blank"
-        >
-          @ChaunceyCrypto
-        </Link>
-      </div>
-
-      <div className=" flex items-center justify-center gap-5">
-        <span>链（选你要打铭文的链，别选错了）:</span>
-        <select
-          className=" h-10 w-[200px] rounded-lg border px-2"
+    <div className=" flex flex-col gap-4">
+      <div className=" flex flex-col gap-2">
+        <span>链（选要打铭文的链）:</span>
+        <TextField
+          select
+          defaultValue="eth"
+          size="small"
           disabled={running}
           onChange={(e) => {
             const text = e.target.value as ChainKey;
-            setChain(chains[text]);
+            setChain(inscriptionChains[text]);
           }}
         >
-          {Object.keys(chains).map((key) => (
-            <option
-              key={key}
+          {Object.entries(inscriptionChains).map(([key, chain]) => (
+            <MenuItem
+              key={chain.id}
               value={key}
             >
-              {key}
-            </option>
+              {chain.name}
+            </MenuItem>
           ))}
-        </select>
+        </TextField>
       </div>
 
       <div className=" flex flex-col gap-2">
         <span>私钥（必填，每行一个）:</span>
-        <textarea
-          className=" h-[100px] w-[800px] rounded-lg border p-2"
-          placeholder="私钥，不要带 0x，程序会自动处理"
+        <TextField
+          multiline
+          minRows={2}
+          placeholder="私钥，带不带 0x 都行，程序会自动处理"
           disabled={running}
           onChange={(e) => {
             const text = e.target.value;
             const lines = text.split("\n");
-            const accounts = lines.map((line) => {
-              const key = "0x" + line.trim();
-              if (/^0x[a-fA-F0-9]{64}$/.test(key)) {
-                return privateKeyToAccount(key as Hex);
-              }
-            });
-            setAccounts(accounts.filter((x) => x) as PrivateKeyAccount[]);
+            const keys = lines
+              .map((line) => {
+                const key = line.trim();
+                if (/^[a-fA-F0-9]{64}$/.test(key)) {
+                  return `0x${key}`;
+                }
+                if (/^0x[a-fA-F0-9]{64}$/.test(key)) {
+                  return key as Hex;
+                }
+              })
+              .filter((x) => x) as Hex[];
+            setPrivateKeys(keys);
           }}
         />
       </div>
 
-      <div className=" flex flex-col gap-2">
-        <span>转给谁的地址（必填）:</span>
-        <input
-          className=" h-10 w-[800px] rounded-lg border px-2"
-          placeholder="地址"
+      <RadioGroup
+        row
+        defaultValue="meToMe"
+        onChange={(e) => {
+          const value = e.target.value as RadioType;
+          setRadio(value);
+        }}
+      >
+        <FormControlLabel
+          value="meToMe"
+          control={<Radio />}
+          label="自转"
           disabled={running}
-          onChange={(e) => {
-            const text = e.target.value;
-            isAddress(text) && setToAddress(text);
-          }}
         />
-      </div>
+        <FormControlLabel
+          value="manyToOne"
+          control={<Radio />}
+          label="多转一"
+          disabled={running}
+        />
+      </RadioGroup>
+
+      {radio === "manyToOne" && (
+        <div className=" flex flex-col gap-2">
+          <span>转给谁的地址（必填）:</span>
+          <TextField
+            size="small"
+            placeholder="地址"
+            disabled={running}
+            onChange={(e) => {
+              const text = e.target.value;
+              isAddress(text) && setToAddress(text);
+            }}
+          />
+        </div>
+      )}
 
       <div className=" flex flex-col gap-2">
-        <span>rpc（可选，默认公共，http，最好用自己的）:</span>
-        <input
-          className=" h-10 w-[800px] rounded-lg border px-2"
-          placeholder="rpc"
+        <span>rpc（选填，默认公共，http，最好用自己的）:</span>
+        <TextField
+          size="small"
+          placeholder="RPC"
           disabled={running}
           onChange={(e) => {
             const text = e.target.value;
@@ -224,10 +204,10 @@ export default function Home() {
       </div>
 
       <div className=" flex flex-col gap-2">
-        <span>要打的铭文（原始铭文，不是转码后的十六进制）:</span>
-        <textarea
-          className=" h-[100px] w-[800px] rounded-lg border p-2"
-          placeholder={`铭文，不要输入错了，自己多检查下，例子：\n${example}`}
+        <span>铭文（必填，原始铭文，不是转码后的十六进制）:</span>
+        <TextField
+          size="small"
+          placeholder={`铭文，不要输入错了，多检查下，例子：\n${example}`}
           disabled={running}
           onChange={(e) => {
             const text = e.target.value;
@@ -236,52 +216,57 @@ export default function Home() {
         />
       </div>
 
-      <div className=" flex items-center justify-center gap-5">
-        <button
-          className={classNames(
-            " h-10 w-[200px] rounded-full text-white transition-all hover:opacity-80",
-            running ? " bg-red-600" : " bg-green-600",
-          )}
-          onClick={() => {
-            if (!running) {
-              setRunning(true);
-              run();
-            } else {
-              setRunning(false);
-              timer && clearInterval(timer);
-            }
-          }}
-        >
-          {running ? "运行中" : "运行"}
-        </button>
-
-        <input
-          className=" h-10 w-[400px] rounded-lg border px-2"
-          placeholder="间隔时间（默认 1000ms）"
+      <div className=" flex flex-col gap-2">
+        <span>额外 gas 费（选填，额外给矿工的小费）:</span>
+        <TextField
           type="number"
+          size="small"
+          placeholder="gas 费"
           disabled={running}
           onChange={(e) => {
-            const text = e.target.value;
-            setIntervalTime(Number(text));
+            const num = Number(e.target.value);
+            !Number.isNaN(num) && num > 0 && setGas(num);
           }}
         />
       </div>
 
-      <div className=" mt-5 flex w-[1000px] flex-col gap-2">
-        <span>{`日志（计数 = ${
-          logs.filter((log) => log.includes("✅")).length
-        }）:`}</span>
-        <div className=" flex h-[600px] flex-col gap-1 overflow-auto rounded-lg bg-gray-100 px-4 py-2">
-          {logs.map((log, index) => (
-            <div
-              key={log + index}
-              className=" flex h-8 items-center"
-            >
-              {log}
-            </div>
-          ))}
-        </div>
+      <div className=" flex flex-col gap-2">
+        <span>间隔时间（选填，最低 100 ms）:</span>
+        <TextField
+          type="number"
+          size="small"
+          placeholder="默认 1000 ms"
+          disabled={running}
+          onChange={(e) => {
+            const num = Number(e.target.value);
+            !Number.isNaN(num) && num >= 100 && setIntervalTime(num);
+          }}
+        />
       </div>
-    </main>
+
+      <Button
+        variant="contained"
+        className=" max-w-md"
+        color={running ? "error" : "success"}
+        onClick={() => {
+          if (!running) {
+            setRunning(true);
+            run();
+          } else {
+            setRunning(false);
+            timer && clearInterval(timer);
+          }
+        }}
+      >
+        {running ? "运行中" : "运行"}
+      </Button>
+
+      <Log
+        title={`日志（成功次数 = ${
+          logs.filter((log) => log.includes("✅")).length
+        }）:`}
+        logs={logs}
+      />
+    </div>
   );
 }
