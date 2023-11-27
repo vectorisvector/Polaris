@@ -133,6 +133,7 @@ export default function Home() {
         <TextField
           multiline
           minRows={2}
+          size="small"
           placeholder="私钥，带不带 0x 都行，程序会自动处理"
           disabled={running}
           onChange={(e) => {
@@ -192,19 +193,6 @@ export default function Home() {
       )}
 
       <div className=" flex flex-col gap-2">
-        <span>RPC（选填，默认公共，http，最好用自己的）:</span>
-        <TextField
-          size="small"
-          placeholder="RPC"
-          disabled={running}
-          onChange={(e) => {
-            const text = e.target.value;
-            setRpc(text);
-          }}
-        />
-      </div>
-
-      <div className=" flex flex-col gap-2">
         <span>铭文（必填，原始铭文，不是转码后的十六进制）:</span>
         <TextField
           size="small"
@@ -213,6 +201,19 @@ export default function Home() {
           onChange={(e) => {
             const text = e.target.value;
             setInscription(text.trim());
+          }}
+        />
+      </div>
+
+      <div className=" flex flex-col gap-2">
+        <span>RPC（选填，默认公共，http，最好用自己的）:</span>
+        <TextField
+          size="small"
+          placeholder="RPC"
+          disabled={running}
+          onChange={(e) => {
+            const text = e.target.value;
+            setRpc(text);
           }}
         />
       </div>

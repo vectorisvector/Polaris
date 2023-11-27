@@ -8,6 +8,7 @@ import { ReactNode, useMemo, useState } from "react";
 
 import ColorModeContext from "@/contexts/colorModeContext";
 
+import { GA } from "../GA";
 import Header from "../Header";
 import Media from "../Media";
 import themeRegister from "./theme";
@@ -54,6 +55,8 @@ export default function ThemeRegister({ children, themeMode }: IAppProps) {
           </Container>
 
           <Analytics />
+
+          <GA />
         </body>
       </ThemeProvider>
     </ColorModeContext.Provider>

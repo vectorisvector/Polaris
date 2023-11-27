@@ -19,6 +19,10 @@ export default function Header() {
       title: "Inscription",
       link: "/",
     },
+    {
+      title: "Ierc Pow",
+      link: "/ierc",
+    },
   ];
 
   return (
