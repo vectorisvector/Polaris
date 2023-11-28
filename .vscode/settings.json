@@ -17,6 +17,7 @@
     "gtag",
     "Ierc",
     "imgs",
+    "keccak",
     "linea",
     "rainbowkit",
     "roboto",
@@ -24,10 +25,5 @@
     "viem",
     "wagmi",
     "xone"
-  ],
-  "[go]": {
-    "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": "explicit"
-    }
-  }
+  ]
 }

@@ -42,6 +42,7 @@ export default function Home() {
   const [timer, setTimer] = useState<NodeJS.Timeout>();
   const [intervalTime, setIntervalTime] = useState<number>(1000);
   const [logs, setLogs] = useState<string[]>([]);
+  const [successCount, setSuccessCount] = useState<number>(0);
 
   const run = useCallback(() => {
     if (privateKeys.length === 0) {
@@ -83,6 +84,7 @@ export default function Home() {
             handleLog(`${handleAddress(account.address)} ${hash}`, "success"),
             ...logs,
           ]);
+          setSuccessCount((count) => count + 1);
         } catch (error) {
           setLogs((logs) => [
             handleLog(`${handleAddress(account.address)} error`, "error"),
@@ -248,7 +250,6 @@ export default function Home() {
 
       <Button
         variant="contained"
-        className=" max-w-md"
         color={running ? "error" : "success"}
         onClick={() => {
           if (!running) {
@@ -264,10 +265,11 @@ export default function Home() {
       </Button>
 
       <Log
-        title={`日志（成功次数 = ${
-          logs.filter((log) => log.includes("✅")).length
-        }）:`}
+        title={`日志（成功次数 => ${successCount}）:`}
         logs={logs}
+        onClear={() => {
+          setLogs([]);
+        }}
       />
     </div>
   );

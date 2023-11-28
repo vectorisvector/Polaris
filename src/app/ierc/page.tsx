@@ -9,8 +9,7 @@ import {
   TextField,
 } from "@mui/material";
 import { useCallback, useMemo, useRef, useState } from "react";
-import { createWalletClient, Hex, http } from "viem";
-import { mainnet } from "viem/chains";
+import { Hex } from "viem";
 
 import Log from "@/components/Log";
 import useIsClient from "@/hooks/useIsClient";
@@ -18,23 +17,35 @@ import { handleLog } from "@/utils/helper";
 
 type RadioType = "prod" | "test";
 
+interface IWorkerData {
+  log?: string;
+  mineRate?: number;
+}
+
 export default function Ierc() {
   const workers = useRef<Worker[]>();
   const [radio, setRadio] = useState<RadioType>("prod");
   const [privateKey, setPrivateKey] = useState<Hex>();
   const [rpc, setRpc] = useState<string>();
   const [tick, setTick] = useState<string>("");
+  const [amount, setAmount] = useState<number>(0);
   const [difficulty, setDifficulty] = useState<string>("");
-  const [gas, setGas] = useState<number>(0);
+  const [gasPremium, setGasPremium] = useState<number>(110);
   const [cpu, setCpu] = useState<number>(1);
   const [running, setRunning] = useState<boolean>(false);
   const [logs, setLogs] = useState<string[]>([]);
+  const [mineRateList, setMineRateList] = useState<number[]>([]);
+  const [successCount, setSuccessCount] = useState<number>(0);
 
   const isClient = useIsClient();
   const coreCount = useMemo(
     () => (isClient ? navigator.hardwareConcurrency : 1),
     [isClient],
   );
+
+  const mineRate = useMemo(() => {
+    return mineRateList.reduce((a, b) => a + b, 0);
+  }, [mineRateList]);
 
   const pushLog = useCallback((log: string, state?: string) => {
     setLogs((logs) => [handleLog(log, state), ...logs]);
@@ -43,26 +54,51 @@ export default function Ierc() {
   const generateWorkers = useCallback(() => {
     const newWorkers = [];
     for (let i = 0; i < cpu; i++) {
-      const workerUrl = new URL("./runIercMine.js", import.meta.url);
-
-      const worker = new Worker(workerUrl);
+      const worker = new Worker(new URL("./mine.js", import.meta.url));
       newWorkers.push(worker);
+
+      worker.postMessage({
+        index: i,
+        privateKey,
+        rpc,
+        tick,
+        amount,
+        difficulty,
+        gasPremium,
+        env: radio,
+      });
 
       worker.onerror = (e) => {
         pushLog(`Worker ${i} error: ${e.message}`, "error");
       };
       worker.onmessage = (e) => {
-        const { data } = e;
-        if (data.type === "log") {
+        const data = e.data as IWorkerData;
+        if (data.log) {
           pushLog(data.log);
+          setSuccessCount((count) => count + 1);
         }
-        if (data.type === "result") {
-          pushLog(data.log, "success");
+        if (data.mineRate) {
+          const rate = data.mineRate;
+          setMineRateList((list) => {
+            const newList = [...list];
+            newList[i] = rate;
+            return newList;
+          });
         }
       };
     }
     workers.current = newWorkers;
-  }, [cpu, pushLog]);
+  }, [
+    amount,
+    cpu,
+    difficulty,
+    gasPremium,
+    privateKey,
+    pushLog,
+    radio,
+    rpc,
+    tick,
+  ]);
 
   const run = useCallback(() => {
     if (!privateKey) {
@@ -78,16 +114,30 @@ export default function Ierc() {
       return;
     }
 
+    if (!amount) {
+      setLogs((logs) => [handleLog("没有数量", "error"), ...logs]);
+      pushLog("没有数量", "error");
+      setRunning(false);
+      return;
+    }
+
     if (!difficulty) {
       pushLog("没有难度", "error");
       setRunning(false);
       return;
     }
 
-    generateWorkers();
-  }, [difficulty, generateWorkers, privateKey, pushLog, tick]);
+    pushLog("🚀🚀🚀 Start Mining...");
 
-  const end = useCallback(() => {}, []);
+    generateWorkers();
+  }, [amount, difficulty, generateWorkers, privateKey, pushLog, tick]);
+
+  const end = useCallback(() => {
+    workers.current?.forEach((worker) => {
+      worker.terminate();
+    });
+    workers.current = undefined;
+  }, []);
 
   return (
     <div className=" flex flex-col gap-4">
@@ -146,6 +196,20 @@ export default function Ierc() {
       </div>
 
       <div className=" flex flex-col gap-2">
+        <span>数量（必填，每张数量）:</span>
+        <TextField
+          type="number"
+          size="small"
+          placeholder="数量，例子：10000"
+          disabled={running}
+          onChange={(e) => {
+            const num = Number(e.target.value);
+            !Number.isNaN(num) && num >= 0 && setAmount(num);
+          }}
+        />
+      </div>
+
+      <div className=" flex flex-col gap-2">
         <span>难度（必填，十六进制，例子：0x00000）:</span>
         <TextField
           size="small"
@@ -168,6 +232,7 @@ export default function Ierc() {
           onChange={(e) => {
             const text = e.target.value;
             setCpu(Number(text));
+            setMineRateList([]);
           }}
         >
           {new Array(coreCount).fill(null).map((_, index) => (
@@ -195,22 +260,23 @@ export default function Ierc() {
       </div>
 
       <div className=" flex flex-col gap-2">
-        <span>额外 gas 费（选填，额外给矿工的小费）:</span>
+        <span>
+          gas 溢价（选填，启动程序时候的 gasPrice 乘以溢价作为付出的最高 gas）:
+        </span>
         <TextField
           type="number"
           size="small"
-          placeholder="默认 0，单位 gwei，例子: 10"
+          placeholder="默认 110 也就是 1.1 倍率，最低限制 100，例子: 110"
           disabled={running}
           onChange={(e) => {
             const num = Number(e.target.value);
-            !Number.isNaN(num) && num >= 0 && setGas(num);
+            !Number.isNaN(num) && num >= 100 && setGasPremium(num);
           }}
         />
       </div>
 
       <Button
         variant="contained"
-        className=" max-w-md"
         color={running ? "error" : "success"}
         onClick={() => {
           if (!running) {
@@ -226,10 +292,11 @@ export default function Ierc() {
       </Button>
 
       <Log
-        title={`日志（成功次数 = ${
-          logs.filter((log) => log.includes("✅")).length
-        }）:`}
+        title={`日志（效率 => ${mineRate} c/s 成功次数 => ${successCount}）:`}
         logs={logs}
+        onClear={() => {
+          setLogs([]);
+        }}
       />
     </div>
   );

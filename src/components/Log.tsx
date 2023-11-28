@@ -1,13 +1,23 @@
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 
 interface LogProps {
   title: string;
   logs: string[];
+  onClear: () => void;
 }
-export default function Log({ title, logs }: LogProps) {
+export default function Log({ title, logs, onClear }: LogProps) {
   return (
     <div className=" mt-5 flex flex-col gap-2">
-      <span>{title}</span>
+      <div className=" flex items-center gap-5">
+        <span>{title}</span>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={onClear}
+        >
+          Clear
+        </Button>
+      </div>
       <Box
         className=" flex h-[600px] flex-col gap-1 overflow-auto rounded-lg px-4 py-2"
         sx={(theme) => ({
