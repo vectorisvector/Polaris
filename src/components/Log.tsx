@@ -8,7 +8,7 @@ interface LogProps {
 export default function Log({ title, logs, onClear }: LogProps) {
   return (
     <div className=" mt-5 flex flex-col gap-2">
-      <div className=" flex items-center gap-5">
+      <div className=" flex items-center gap-4">
         <span>{title}</span>
         <Button
           variant="contained"

@@ -36,6 +36,7 @@ export default function Ierc() {
   const [logs, setLogs] = useState<string[]>([]);
   const [mineRateList, setMineRateList] = useState<number[]>([]);
   const [successCount, setSuccessCount] = useState<number>(0);
+  const [customCpu, setCustomCpu] = useState<number>(0);
 
   const isClient = useIsClient();
   const coreCount = useMemo(
@@ -53,7 +54,8 @@ export default function Ierc() {
 
   const generateWorkers = useCallback(() => {
     const newWorkers = [];
-    for (let i = 0; i < cpu; i++) {
+    const cpuCount = customCpu > 0 ? customCpu : cpu;
+    for (let i = 0; i < cpuCount; i++) {
       const worker = new Worker(new URL("./mine.js", import.meta.url));
       newWorkers.push(worker);
 
@@ -91,6 +93,7 @@ export default function Ierc() {
   }, [
     amount,
     cpu,
+    customCpu,
     difficulty,
     gasPremium,
     privateKey,
@@ -223,27 +226,54 @@ export default function Ierc() {
       </div>
 
       <div className=" flex flex-col gap-2">
-        <span>cpu 核心数:</span>
-        <TextField
-          select
-          defaultValue={1}
-          size="small"
-          disabled={running}
-          onChange={(e) => {
-            const text = e.target.value;
-            setCpu(Number(text));
-            setMineRateList([]);
-          }}
-        >
-          {new Array(coreCount).fill(null).map((_, index) => (
-            <MenuItem
-              key={index}
-              value={index + 1}
-            >
-              {index + 1}
-            </MenuItem>
-          ))}
-        </TextField>
+        <div className=" flex items-center gap-2">
+          <span>cpu 核心数:</span>
+          <Button
+            size="small"
+            color="secondary"
+            disabled={running}
+            onClick={() => {
+              setCustomCpu((_customCpu) => (_customCpu <= 0 ? 1 : -1));
+              setMineRateList([]);
+            }}
+          >
+            自定义
+          </Button>
+        </div>
+        {customCpu <= 0 ? (
+          <TextField
+            select
+            defaultValue={1}
+            size="small"
+            disabled={running}
+            onChange={(e) => {
+              const text = e.target.value;
+              setCpu(Number(text));
+              setMineRateList([]);
+            }}
+          >
+            {new Array(coreCount).fill(null).map((_, index) => (
+              <MenuItem
+                key={index}
+                value={index + 1}
+              >
+                {index + 1}
+              </MenuItem>
+            ))}
+          </TextField>
+        ) : (
+          <TextField
+            type="number"
+            size="small"
+            placeholder="cpu 核心数，例子：12"
+            disabled={running}
+            value={customCpu}
+            onChange={(e) => {
+              const num = Number(e.target.value);
+              !Number.isNaN(num) && setCustomCpu(Math.floor(num));
+            }}
+          />
+        )}
       </div>
 
       <div className=" flex flex-col gap-2">
