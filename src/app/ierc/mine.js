@@ -25,10 +25,11 @@ self.onmessage = async (e) => {
 
   const provider = new ethers.providers.JsonRpcProvider(rpc ?? PROVIDER_RPC);
   const miner = new ethers.Wallet(privateKey, provider);
+  const network = await provider.getNetwork();
   const { gasPrice } = await provider.getFeeData();
   const targetGasFee = gasPrice.div(100).mul(gasPremium || GAS_PREMIUM);
 
-  const nonce = await miner.getTransactionCount();
+  let nonce = await miner.getTransactionCount();
 
   let startTime = Date.now();
   let mineCount = 0;
@@ -50,7 +51,7 @@ self.onmessage = async (e) => {
 
     const transaction = {
       type: 2,
-      chainId: 1,
+      chainId: network.chainId,
       to: ZERO_ADDRESS,
       maxPriorityFeePerGas: targetGasFee,
       maxFeePerGas: targetGasFee,
@@ -87,6 +88,8 @@ self.onmessage = async (e) => {
         // console.log("🚀 ~ realTransaction:", realTransaction)
 
         await realTransaction.wait();
+
+        nonce = await miner.getTransactionCount();
       }
     }
   }

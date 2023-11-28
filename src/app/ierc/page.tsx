@@ -23,7 +23,7 @@ interface IWorkerData {
 }
 
 export default function Ierc() {
-  const workers = useRef<Worker[]>();
+  const workers = useRef<Worker[]>([]);
   const [radio, setRadio] = useState<RadioType>("prod");
   const [privateKey, setPrivateKey] = useState<Hex>();
   const [rpc, setRpc] = useState<string>();
@@ -111,14 +111,12 @@ export default function Ierc() {
     }
 
     if (!tick) {
-      setLogs((logs) => [handleLog("没有 tick", "error"), ...logs]);
       pushLog("没有 tick", "error");
       setRunning(false);
       return;
     }
 
     if (!amount) {
-      setLogs((logs) => [handleLog("没有数量", "error"), ...logs]);
       pushLog("没有数量", "error");
       setRunning(false);
       return;
@@ -139,7 +137,7 @@ export default function Ierc() {
     workers.current?.forEach((worker) => {
       worker.terminate();
     });
-    workers.current = undefined;
+    workers.current = [];
   }, []);
 
   return (
