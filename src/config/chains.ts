@@ -1,3 +1,4 @@
+import { defineChain } from "viem";
 import {
   arbitrum,
   avalanche,
@@ -16,6 +17,28 @@ import {
   zkSync,
 } from "viem/chains";
 
+export const shibarium = defineChain({
+  id: 7777777,
+  name: "Shibarium",
+  network: "shibarium",
+  nativeCurrency: {
+    decimals: 18,
+    name: "BONE",
+    symbol: "BONE",
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://rpc.shibrpc.com"],
+    },
+    public: {
+      http: ["https://rpc.shibrpc.com"],
+    },
+  },
+  blockExplorers: {
+    default: { name: "Explorer", url: "https://shibariumscan.io" },
+  },
+});
+
 export const inscriptionChains = {
   eth: mainnet,
   bsc,
@@ -32,6 +55,7 @@ export const inscriptionChains = {
   celo,
   confluxESpace,
   gnosis,
+  shibarium,
 };
 
 export type ChainKey = keyof typeof inscriptionChains;
