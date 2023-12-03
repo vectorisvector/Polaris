@@ -18,7 +18,7 @@ import {
 } from "viem/chains";
 
 export const shibarium = defineChain({
-  id: 7777777,
+  id: 109,
   name: "Shibarium",
   network: "shibarium",
   nativeCurrency: {
