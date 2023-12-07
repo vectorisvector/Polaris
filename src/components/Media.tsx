@@ -4,19 +4,9 @@ import Link from "next/link";
 export default function Media() {
   const mediaList = [
     {
-      title: "代码",
-      linkText: "Github",
-      link: "https://github.com/vectorisvector/inscription",
-    },
-    {
-      title: "开发者",
-      linkText: "@cybervector_",
-      link: "https://twitter.com/cybervector_",
-    },
-    {
-      title: "Alpha",
-      linkText: "@ChaunceyCrypto",
-      link: "https://twitter.com/ChaunceyCrypto",
+      title: "本站不保存你的私钥",
+      linkText: "如题",
+      link: "https://3qw.net",
     },
   ];
 
