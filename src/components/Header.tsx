@@ -37,7 +37,7 @@ export default function Header() {
           width={40}
           height={40}
         />
-        <Link href="/">Polaris</Link>
+        <Link href="/">3千万网络</Link>
       </h1>
 
       <div className=" flex h-full items-center gap-4 text-xl font-semibold">
