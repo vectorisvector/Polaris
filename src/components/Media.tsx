@@ -6,7 +6,7 @@ export default function Media() {
     {
       title: "本站不保存你的私钥",
       linkText: "如题",
-      link: "https://3qw.net",
+      link: "https://github.com/vectorisvector/Polaris",
     },
   ];
 
