@@ -50,3 +50,12 @@ export function stringToHex(str: string) {
   let view = encoder.encode(str);
   return uint8ToHex(view);
 }
+
+/**
+ * Suspends the execution of the current function for a specified time.
+ * @param ms - The number of milliseconds to sleep.
+ * @returns A promise that resolves after the specified time has elapsed.
+ */
+export function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

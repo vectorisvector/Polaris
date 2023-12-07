@@ -16,6 +16,7 @@ import {
   http,
   isAddress,
   parseEther,
+  SendTransactionErrorType,
   stringToHex,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
@@ -23,6 +24,7 @@ import { mainnet } from "viem/chains";
 
 import Log from "@/components/Log";
 import { ChainKey, inscriptionChains } from "@/config/chains";
+import useInterval from "@/hooks/useInterval";
 import { handleAddress, handleLog } from "@/utils/helper";
 
 const example =
@@ -39,10 +41,53 @@ export default function Home() {
   const [inscription, setInscription] = useState<string>("");
   const [gas, setGas] = useState<number>(0);
   const [running, setRunning] = useState<boolean>(false);
-  const [timer, setTimer] = useState<NodeJS.Timeout>();
-  const [intervalTime, setIntervalTime] = useState<number>(1000);
+  const [delay, setDelay] = useState<number>(1000);
   const [logs, setLogs] = useState<string[]>([]);
   const [successCount, setSuccessCount] = useState<number>(0);
+
+  const pushLog = useCallback((log: string, state?: string) => {
+    setLogs((logs) => [handleLog(log, state), ...logs]);
+  }, []);
+
+  useInterval(
+    async () => {
+      const client = createWalletClient({
+        chain,
+        transport: http(rpc),
+      });
+      const accounts = privateKeys.map((key) => privateKeyToAccount(key));
+      const results = await Promise.allSettled(
+        accounts.map((account) => {
+          return client.sendTransaction({
+            account,
+            to: radio === "meToMe" ? account.address : toAddress,
+            maxPriorityFeePerGas: parseEther(gas.toString(), "gwei"),
+            value: 0n,
+            data: stringToHex(inscription),
+          });
+        }),
+      );
+      results.forEach((result, index) => {
+        const address = handleAddress(accounts[index].address);
+        if (result.status === "fulfilled") {
+          pushLog(`${address} ${result.value}`, "success");
+          setSuccessCount((count) => count + 1);
+        }
+        if (result.status === "rejected") {
+          const e = result.reason as SendTransactionErrorType;
+          let msg = `${e.name as string}: `;
+          if (e.name === "TransactionExecutionError") {
+            msg = msg + e.details;
+          }
+          if (e.name == "Error") {
+            msg = msg + e.message;
+          }
+          setLogs((logs) => [handleLog(`${address} ${msg}`, "error"), ...logs]);
+        }
+      });
+    },
+    running ? delay : null,
+  );
 
   const run = useCallback(() => {
     if (privateKeys.length === 0) {
@@ -63,47 +108,8 @@ export default function Home() {
       return;
     }
 
-    const client = createWalletClient({
-      chain,
-      transport: http(rpc),
-    });
-
-    const accounts = privateKeys.map((key) => privateKeyToAccount(key));
-
-    const timer = setInterval(async () => {
-      for (const account of accounts) {
-        try {
-          const hash = await client.sendTransaction({
-            account,
-            to: radio === "meToMe" ? account.address : toAddress,
-            maxPriorityFeePerGas: parseEther(gas.toString(), "gwei"),
-            value: 0n,
-            data: stringToHex(inscription),
-          });
-          setLogs((logs) => [
-            handleLog(`${handleAddress(account.address)} ${hash}`, "success"),
-            ...logs,
-          ]);
-          setSuccessCount((count) => count + 1);
-        } catch (error) {
-          setLogs((logs) => [
-            handleLog(`${handleAddress(account.address)} error`, "error"),
-            ...logs,
-          ]);
-        }
-      }
-    }, intervalTime);
-    setTimer(timer);
-  }, [
-    chain,
-    gas,
-    inscription,
-    intervalTime,
-    privateKeys,
-    radio,
-    rpc,
-    toAddress,
-  ]);
+    setRunning(true);
+  }, [inscription, privateKeys, radio, toAddress]);
 
   return (
     <div className=" flex flex-col gap-4">
@@ -235,15 +241,15 @@ export default function Home() {
       </div>
 
       <div className=" flex flex-col gap-2">
-        <span>间隔时间（选填，最低 100 ms）:</span>
+        <span>每笔交易间隔时间 (选填, 最低 0 ms):</span>
         <TextField
           type="number"
           size="small"
-          placeholder="默认 1000 ms"
+          placeholder="默认 0 ms"
           disabled={running}
           onChange={(e) => {
             const num = Number(e.target.value);
-            !Number.isNaN(num) && num >= 100 && setIntervalTime(num);
+            !Number.isNaN(num) && num >= 0 && setDelay(num);
           }}
         />
       </div>
@@ -253,11 +259,9 @@ export default function Home() {
         color={running ? "error" : "success"}
         onClick={() => {
           if (!running) {
-            setRunning(true);
             run();
           } else {
             setRunning(false);
-            timer && clearInterval(timer);
           }
         }}
       >
