@@ -42,7 +42,7 @@ export default function Home() {
   const [inscription, setInscription] = useState<string>("");
   const [gas, setGas] = useState<number>(0);
   const [running, setRunning] = useState<boolean>(false);
-  const [delay, setDelay] = useState<number>(1000);
+  const [delay, setDelay] = useState<number>(0);
   const [logs, setLogs] = useState<string[]>([]);
   const [successCount, setSuccessCount] = useState<number>(0);
 
