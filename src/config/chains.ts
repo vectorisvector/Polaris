@@ -13,6 +13,7 @@ import {
   mainnet,
   okc,
   opBNB,
+  optimism,
   polygon,
   zkSync,
 } from "viem/chains";
@@ -44,6 +45,7 @@ export const inscriptionChains = {
   bsc,
   polygon,
   avalanche,
+  optimism,
   classic,
   base,
   arbitrum,
