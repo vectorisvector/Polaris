@@ -18,6 +18,7 @@ import {
   parseEther,
   SendTransactionErrorType,
   stringToHex,
+  webSocket,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { mainnet } from "viem/chains";
@@ -49,13 +50,14 @@ export default function Home() {
     setLogs((logs) => [handleLog(log, state), ...logs]);
   }, []);
 
+  const client = createWalletClient({
+    chain,
+    transport: rpc && rpc.startsWith("wss") ? webSocket(rpc) : http(rpc),
+  });
+  const accounts = privateKeys.map((key) => privateKeyToAccount(key));
+
   useInterval(
     async () => {
-      const client = createWalletClient({
-        chain,
-        transport: http(rpc),
-      });
-      const accounts = privateKeys.map((key) => privateKeyToAccount(key));
       const results = await Promise.allSettled(
         accounts.map((account) => {
           return client.sendTransaction({
@@ -214,7 +216,9 @@ export default function Home() {
       </div>
 
       <div className=" flex flex-col gap-2">
-        <span>RPC（选填，默认公共，http，最好用自己的）:</span>
+        <span>
+          RPC (选填, 默认公共有瓶颈经常失败, 最好用付费的, http 或者 ws 都可以):
+        </span>
         <TextField
           size="small"
           placeholder="RPC"
