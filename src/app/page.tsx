@@ -33,6 +33,8 @@ const example =
 
 type RadioType = "meToMe" | "manyToOne";
 
+type GasRadio = "all" | "tip";
+
 export default function Home() {
   const [chain, setChain] = useState<Chain>(mainnet);
   const [privateKeys, setPrivateKeys] = useState<Hex[]>([]);
@@ -42,9 +44,10 @@ export default function Home() {
   const [inscription, setInscription] = useState<string>("");
   const [gas, setGas] = useState<number>(0);
   const [running, setRunning] = useState<boolean>(false);
-  const [delay, setDelay] = useState<number>(1000);
+  const [delay, setDelay] = useState<number>(0);
   const [logs, setLogs] = useState<string[]>([]);
   const [successCount, setSuccessCount] = useState<number>(0);
+  const [gasRadio, setGasRadio] = useState<GasRadio>("tip");
 
   const pushLog = useCallback((log: string, state?: string) => {
     setLogs((logs) => [handleLog(log, state), ...logs]);
@@ -63,9 +66,17 @@ export default function Home() {
           return client.sendTransaction({
             account,
             to: radio === "meToMe" ? account.address : toAddress,
-            maxPriorityFeePerGas: parseEther(gas.toString(), "gwei"),
             value: 0n,
             data: stringToHex(inscription),
+            ...(gas > 0
+              ? gasRadio === "all"
+                ? {
+                    gasPrice: parseEther(gas.toString(), "gwei"),
+                  }
+                : {
+                    maxPriorityFeePerGas: parseEther(gas.toString(), "gwei"),
+                  }
+              : {}),
           });
         }),
       );
@@ -230,12 +241,36 @@ export default function Home() {
         />
       </div>
 
+      <RadioGroup
+        row
+        defaultValue="tip"
+        onChange={(e) => {
+          const value = e.target.value as GasRadio;
+          setGasRadio(value);
+        }}
+      >
+        <FormControlLabel
+          value="tip"
+          control={<Radio />}
+          label="额外矿工小费"
+          disabled={running}
+        />
+        <FormControlLabel
+          value="all"
+          control={<Radio />}
+          label="总 gas"
+          disabled={running}
+        />
+      </RadioGroup>
+
       <div className=" flex flex-col gap-2">
-        <span>额外 gas 费（选填，额外给矿工的小费）:</span>
+        <span>{gasRadio === "tip" ? "额外矿工小费" : "总 gas"} (选填):</span>
         <TextField
           type="number"
           size="small"
-          placeholder="默认 0，单位 gwei，例子: 10"
+          placeholder={`${
+            gasRadio === "tip" ? "默认 0" : "默认最新"
+          }, 单位 gwei，例子: 10`}
           disabled={running}
           onChange={(e) => {
             const num = Number(e.target.value);
