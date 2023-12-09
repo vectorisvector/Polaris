@@ -232,7 +232,7 @@ export default function Home() {
         </span>
         <TextField
           size="small"
-          placeholder="RPC"
+          placeholder="获取自己的RPC：https://www.ankr.com/rpc"
           disabled={running}
           onChange={(e) => {
             const text = e.target.value;
