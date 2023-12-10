@@ -44,10 +44,10 @@ export const shibarium = defineChain({
   },
 });
 
-export const camelark = defineChain({
-  id: 20001,
-  name: "Camelark Mainnet",
-  network: "camelark Mainnet",
+export const ethw = defineChain({
+  id: 10001,
+  name: "ETHW-mainnet",
+  network: "ETHW-mainnet",
   nativeCurrency: {
     decimals: 18,
     name: "ETHW",
@@ -55,14 +55,14 @@ export const camelark = defineChain({
   },
   rpcUrls: {
     default: {
-      http: ["https://mainnet-http-rpc.camelark.com"],
+      http: ["https://mainnet.ethereumpow.org"],
     },
     public: {
-      http: ["https://mainnet-http-rpc.camelark.com"],
+      http: ["https://mainnet.ethereumpow.org"],
     },
   },
   blockExplorers: {
-    default: { name: "Explorer", url: "https://scan.camelark.com" },
+    default: { name: "Explorer", url: "https://mainnet.ethwscan.com" },
   },
 });
 
@@ -79,7 +79,7 @@ export const inscriptionChains = {
   base,
   zkSync,
   classic,
-  camelark,
+  ethw,
   eos,
   neonMainnet,
   linea,
