@@ -21,27 +21,33 @@ export default function Media() {
   ];
 
   return (
-    <div className=" flex items-center justify-center gap-x-4 py-4 max-sm:flex-col">
-      {mediaList.map(({ title, linkText, link }) => {
-        return (
-          <div
-            key={title}
-            className=" flex items-center gap-2 text-xl"
-          >
-            <span>{title}:</span>
-            <Box
-              component={Link}
-              href={link}
-              className=" hover:underline"
-              sx={{
-                color: "primary.main",
-              }}
+    <div className=" py-4">
+      <div className=" flex items-center justify-center gap-x-4 max-sm:flex-col">
+        {mediaList.map(({ title, linkText, link }) => {
+          return (
+            <div
+              key={title}
+              className=" flex items-center gap-2 text-xl"
             >
-              {linkText}
-            </Box>
-          </div>
-        );
-      })}
+              <span>{title}:</span>
+              <Box
+                component={Link}
+                href={link}
+                className=" hover:underline"
+                sx={{
+                  color: "primary.main",
+                }}
+              >
+                {linkText}
+              </Box>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className=" text-center">
+        打赏地址☕️: 0xcb64546921145fe3fa1316d08e4af5b6b60d3945
+      </div>
     </div>
   );
 }
