@@ -70,7 +70,11 @@ export default function Home() {
             account,
             to: radio === "meToMe" ? account.address : toAddress,
             value: 0n,
-            data: stringToHex(inscription),
+            ...(inscription
+              ? {
+                  data: stringToHex(inscription),
+                }
+              : {}),
             ...(gas > 0
               ? gasRadio === "all"
                 ? {
