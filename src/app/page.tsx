@@ -50,7 +50,10 @@ export default function Home() {
   const [gasRadio, setGasRadio] = useState<GasRadio>("tip");
 
   const pushLog = useCallback((log: string, state?: string) => {
-    setLogs((logs) => [handleLog(log, state), ...logs]);
+    setLogs((logs) => [
+      handleLog(log, state),
+      ...(logs.length >= 1000 ? logs.slice(0, 1000) : logs),
+    ]);
   }, []);
 
   const client = createWalletClient({
@@ -95,7 +98,7 @@ export default function Home() {
           if (e.name == "Error") {
             msg = msg + e.message;
           }
-          setLogs((logs) => [handleLog(`${address} ${msg}`, "error"), ...logs]);
+          pushLog(`${address} ${msg}`, "error");
         }
       });
     },
@@ -104,13 +107,13 @@ export default function Home() {
 
   const run = useCallback(() => {
     if (privateKeys.length === 0) {
-      setLogs((logs) => [handleLog("没有私钥", "error"), ...logs]);
+      pushLog("没有私钥", "error");
       setRunning(false);
       return;
     }
 
     if (radio === "manyToOne" && !toAddress) {
-      setLogs((logs) => [handleLog("没有地址", "error"), ...logs]);
+      pushLog("没有地址", "error");
       setRunning(false);
       return;
     }
@@ -122,7 +125,7 @@ export default function Home() {
     // }
 
     setRunning(true);
-  }, [privateKeys, radio, toAddress]);
+  }, [privateKeys.length, pushLog, radio, toAddress]);
 
   return (
     <div className=" flex flex-col gap-4">
