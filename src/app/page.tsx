@@ -115,14 +115,14 @@ export default function Home() {
       return;
     }
 
-    if (!inscription) {
-      setLogs((logs) => [handleLog("没有铭文", "error"), ...logs]);
-      setRunning(false);
-      return;
-    }
+    // if (!inscription) {
+    //   setLogs((logs) => [handleLog("没有铭文", "error"), ...logs]);
+    //   setRunning(false);
+    //   return;
+    // }
 
     setRunning(true);
-  }, [inscription, privateKeys, radio, toAddress]);
+  }, [privateKeys, radio, toAddress]);
 
   return (
     <div className=" flex flex-col gap-4">
@@ -214,7 +214,7 @@ export default function Home() {
       )}
 
       <div className=" flex flex-col gap-2">
-        <span>铭文（必填，原始铭文，不是转码后的十六进制）:</span>
+        <span>铭文（选填，原始铭文，不是转码后的十六进制）:</span>
         <TextField
           size="small"
           placeholder={`铭文，不要输入错了，多检查下，例子：\n${example}`}
