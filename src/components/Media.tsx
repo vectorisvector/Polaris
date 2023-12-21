@@ -27,7 +27,7 @@ export default function Media() {
           return (
             <div
               key={title}
-              className=" flex items-center gap-2 text-xl"
+              className=" flex items-center gap-2"
             >
               <span>{title}:</span>
               <Box
@@ -46,7 +46,17 @@ export default function Media() {
       </div>
 
       <div className=" text-center">
-        打赏地址☕️: 0xcb64546921145fe3fa1316d08e4af5b6b60d3945
+        <span>广告位招租☕️, dm </span>
+        <Box
+          component={Link}
+          href={"https://twitter.com/cybervector_"}
+          className=" hover:underline"
+          sx={{
+            color: "primary.main",
+          }}
+        >
+          @cybervector_
+        </Box>
       </div>
     </div>
   );
