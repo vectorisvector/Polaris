@@ -34,20 +34,6 @@ export default function Media() {
           );
         })}
       </div>
-
-      <div className=" text-center">
-        <span>广告位招租☕️, dm </span>
-        <Box
-          component={Link}
-          href={"https://twitter.com/cybervector_"}
-          className=" hover:underline"
-          sx={{
-            color: "primary.main",
-          }}
-        >
-          @cybervector_
-        </Box>
-      </div>
     </div>
   );
 }
