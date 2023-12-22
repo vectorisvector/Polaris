@@ -50,7 +50,10 @@ export default function Home() {
   const [gasRadio, setGasRadio] = useState<GasRadio>("tip");
 
   const pushLog = useCallback((log: string, state?: string) => {
-    setLogs((logs) => [handleLog(log, state), ...logs]);
+    setLogs((logs) => [
+      handleLog(log, state),
+      ...(logs.length >= 1000 ? logs.slice(0, 1000) : logs),
+    ]);
   }, []);
 
   const client = createWalletClient({
@@ -67,7 +70,11 @@ export default function Home() {
             account,
             to: radio === "meToMe" ? account.address : toAddress,
             value: 0n,
-            data: stringToHex(inscription),
+            ...(inscription
+              ? {
+                  data: stringToHex(inscription),
+                }
+              : {}),
             ...(gas > 0
               ? gasRadio === "all"
                 ? {
@@ -95,7 +102,7 @@ export default function Home() {
           if (e.name == "Error") {
             msg = msg + e.message;
           }
-          setLogs((logs) => [handleLog(`${address} ${msg}`, "error"), ...logs]);
+          pushLog(`${address} ${msg}`, "error");
         }
       });
     },
@@ -104,25 +111,25 @@ export default function Home() {
 
   const run = useCallback(() => {
     if (privateKeys.length === 0) {
-      setLogs((logs) => [handleLog("没有私钥", "error"), ...logs]);
+      pushLog("没有私钥", "error");
       setRunning(false);
       return;
     }
 
     if (radio === "manyToOne" && !toAddress) {
-      setLogs((logs) => [handleLog("没有地址", "error"), ...logs]);
+      pushLog("没有地址", "error");
       setRunning(false);
       return;
     }
 
-    if (!inscription) {
-      setLogs((logs) => [handleLog("没有铭文", "error"), ...logs]);
-      setRunning(false);
-      return;
-    }
+    // if (!inscription) {
+    //   setLogs((logs) => [handleLog("没有铭文", "error"), ...logs]);
+    //   setRunning(false);
+    //   return;
+    // }
 
     setRunning(true);
-  }, [inscription, privateKeys, radio, toAddress]);
+  }, [privateKeys.length, pushLog, radio, toAddress]);
 
   return (
     <div className=" flex flex-col gap-4">
@@ -214,7 +221,7 @@ export default function Home() {
       )}
 
       <div className=" flex flex-col gap-2">
-        <span>铭文（必填，原始铭文，不是转码后的十六进制）:</span>
+        <span>铭文（选填，原始铭文，不是转码后的十六进制）:</span>
         <TextField
           size="small"
           placeholder={`铭文，不要输入错了，多检查下，例子：\n${example}`}

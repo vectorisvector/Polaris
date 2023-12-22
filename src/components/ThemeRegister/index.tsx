@@ -1,7 +1,6 @@
 "use client";
 
 import { ThemeProvider } from "@emotion/react";
-import { Analytics } from "@mui/icons-material";
 import { Container, CssBaseline, PaletteMode } from "@mui/material";
 import { useCookieState } from "ahooks";
 import { ReactNode, useMemo, useState } from "react";
@@ -53,8 +52,6 @@ export default function ThemeRegister({ children, themeMode }: IAppProps) {
 
             {children}
           </Container>
-
-          <Analytics />
 
           <GA />
         </body>
