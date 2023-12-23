@@ -173,7 +173,7 @@ export const inscriptionChains = {
   base,
   zkSync,
   classic,
-  bevm,
+  // bevm,
   xt,
   iotex,
   meter,
