@@ -138,6 +138,28 @@ export const bevm = defineChain({
   },
 });
 
+export const xt = defineChain({
+  id: 520,
+  name: "XT Smart Chain Mainnet",
+  network: "XT Smart Chain Mainnet",
+  nativeCurrency: {
+    decimals: 18,
+    name: "XT",
+    symbol: "XT",
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://datarpc2.xsc.pub"],
+    },
+    public: {
+      http: ["https://datarpc2.xsc.pub"],
+    },
+  },
+  blockExplorers: {
+    default: { name: "Explorer", url: "https://xscscan.pub" },
+  },
+});
+
 export const inscriptionChains = {
   eth: mainnet,
   bsc,
@@ -152,6 +174,7 @@ export const inscriptionChains = {
   zkSync,
   classic,
   bevm,
+  xt,
   iotex,
   meter,
   klaytn,
