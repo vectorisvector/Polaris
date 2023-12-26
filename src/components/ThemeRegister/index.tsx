@@ -7,6 +7,7 @@ import { ReactNode, useMemo, useState } from "react";
 
 import ColorModeContext from "@/contexts/colorModeContext";
 
+import Ad from "../Ad";
 import { GA } from "../GA";
 import Header from "../Header";
 import Media from "../Media";
@@ -45,10 +46,12 @@ export default function ThemeRegister({ children, themeMode }: IAppProps) {
 
           <Container
             component="main"
-            maxWidth="xl"
+            maxWidth="lg"
             className=" mt-16"
           >
             <Media />
+
+            <Ad />
 
             {children}
           </Container>

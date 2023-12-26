@@ -16,6 +16,16 @@ const nextConfig = {
 
     return config;
   },
+
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "raw.githubusercontent.com",
+        port: "",
+      },
+    ],
+  },
 };
 
 module.exports = nextConfig;

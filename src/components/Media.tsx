@@ -45,7 +45,7 @@ export default function Media() {
         })}
       </div>
 
-      <div className=" text-center">
+      {/* <div className=" text-center">
         <span>广告位招租☕️, dm </span>
         <Box
           component={Link}
@@ -57,7 +57,7 @@ export default function Media() {
         >
           @cybervector_
         </Box>
-      </div>
+      </div> */}
     </div>
   );
 }
