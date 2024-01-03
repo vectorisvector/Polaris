@@ -14,9 +14,9 @@ export default function Media() {
       link: "https://twitter.com/cybervector_",
     },
     {
-      title: "Alpha",
-      linkText: "@ChaunceyCrypto",
-      link: "https://twitter.com/ChaunceyCrypto",
+      title: "Discord",
+      linkText: "111 避难所",
+      link: "https://discord.gg/MkyQZnyeJF",
     },
   ];
 
